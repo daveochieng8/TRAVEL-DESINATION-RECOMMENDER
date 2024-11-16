@@ -3,6 +3,19 @@ import pandas as pd
 import pickle
 from recommendation import recommend_attractions
 from custom_preprocessors import PreprocessText
+import nltk
+from nltk.corpus import wordnet
+from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
+
+# Download NLTK resources
+nltk.download('punkt')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+nltk.download('punkt_tab')
+
+# Initialize NLTK Lemmatizer
+lemmatizer = WordNetLemmatizer()
 
 def load_resources():
     """Load the pipeline and dataset."""
