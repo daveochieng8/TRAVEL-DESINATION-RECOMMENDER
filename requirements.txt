@@ -1,6 +1,6 @@
-numpy
-spacy
-thinc
-nltk
-scikit-learn
-joblib
+numpy==1.24.4
+spacy==3.6.1
+thinc==8.1.13
+scikit-learn==1.5.2
+nltk==3.9.1
+joblib==1.4.2
