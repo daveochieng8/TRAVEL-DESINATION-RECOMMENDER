@@ -1,20 +1,77 @@
 import streamlit as st
 import pandas as pd
-import pickle
-from recommendation import recommend_attractions
-from custom_preprocessors import PreprocessText
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
-def load_resources():
-    """Load the pipeline and dataset."""
-    try:
-        pipeline = pickle.load(open("destination_pipeline.pkl", "rb"))
-        data = pd.read_csv("best_travel_destinations_for_2025.csv")
-        return pipeline, data
-    except Exception as e:
-        st.error(f"Error loading resources: {str(e)}")
-        return None, None
+def recommend_attractions(user_query, data, top_n=3):
+    """
+    Recommend attractions based on user query using TF-IDF and cosine similarity.
+    """
+    # Combine relevant features for TF-IDF
+    data['combined_features'] = data['Description'] + ' ' + data['Activities'] + ' ' + data['Country']
+    
+    # Create TF-IDF vectors
+    tfidf = TfidfVectorizer(stop_words='english')
+    tfidf_matrix = tfidf.fit_transform(data['combined_features'])
+    
+    # Transform user query
+    user_vector = tfidf.transform([user_query])
+    
+    # Calculate similarities
+    similarities = cosine_similarity(user_vector, tfidf_matrix)
+    
+    # Get top recommendations
+    top_indices = similarities[0].argsort()[-top_n:][::-1]
+    recommendations = data.iloc[top_indices]
+    
+    return recommendations.iloc[0]['Country'], recommendations
+
+def set_custom_style():
+    """Set custom CSS styles for the app."""
+    st.markdown("""
+        <style>
+        /* Custom background with gradient */
+        .stApp {
+            background: linear-gradient(to bottom right, #f0f8ff, #e6e9ff);
+        }
+        
+        /* Make containers stand out */
+        .stMarkdown, .stButton, .stTextArea {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* Style for recommendation text */
+        .recommendation-text {
+            background-color: #f0f8ff;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #1e90ff;
+            font-size: 1.2em;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* Style for country name */
+        .country-highlight {
+            color: #1e90ff;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-decoration: underline;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 5px;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
 def main():
+    # Set custom styling
+    set_custom_style()
+    
     # Page config
     st.set_page_config(
         page_title="Travel Destination Recommender",
@@ -29,10 +86,25 @@ def main():
     Try mentioning specific activities like 'hiking', 'snorkeling', or 'historical sites'.
     """)
     
-    # Load resources
-    pipeline, data = load_resources()
-    if not pipeline or data is None:
-        st.stop()
+    # Create sample data
+    data = pd.DataFrame({
+        'Country': ['Canada', 'Japan', 'Italy', 'New Zealand', 'Thailand'],
+        'Attraction': ['Banff National Park', 'Mount Fuji', 'Colosseum', 'Milford Sound', 'Phi Phi Islands'],
+        'Description': [
+            'Beautiful mountain landscapes with hiking trails and wildlife',
+            'Iconic mountain with cultural significance and hiking opportunities',
+            'Ancient Roman amphitheater with rich history',
+            'Stunning fjord with waterfalls and wildlife viewing',
+            'Tropical islands with beaches and snorkeling'
+        ],
+        'Activities': [
+            'hiking, wildlife viewing, photography, camping',
+            'hiking, cultural tours, photography, mountain climbing',
+            'historical tours, architecture, photography',
+            'hiking, kayaking, wildlife viewing, photography',
+            'snorkeling, swimming, beach activities, island hopping'
+        ]
+    })
     
     # User input
     user_query = st.text_area(
@@ -54,23 +126,23 @@ def main():
             
         try:
             with st.spinner("Finding the perfect destinations for you..."):
-                result = recommend_attractions(user_query, pipeline, data)
+                predicted_country, recommendations = recommend_attractions(user_query, data)
                 
-            if isinstance(result, str):
-                st.warning(result)
-            else:
-                predicted_country, recommendations = result
+                # Display results with custom styling
+                st.markdown(
+                    f'<div class="recommendation-text">Based on your preferences, we recommend visiting: '
+                    f'<span class="country-highlight">{predicted_country}</span>!</div>',
+                    unsafe_allow_html=True
+                )
                 
-                # Display results in a nice format
-                st.success(f"Based on your preferences, we recommend visiting: **{predicted_country}**!")
-                
-                # Display recommendations in cards
+                # Display recommendations in styled cards
                 for _, row in recommendations.iterrows():
                     with st.container():
                         st.markdown("""---""")
                         st.markdown(f"### 🎯 {row['Attraction']}")
                         st.markdown(f"**Location:** {row['Country']}")
                         st.markdown(f"**Description:** {row['Description']}")
+                        st.markdown(f"**Activities:** {row['Activities']}")
                 
         except Exception as e:
             st.error(f"An error occurred: {str(e)}")
