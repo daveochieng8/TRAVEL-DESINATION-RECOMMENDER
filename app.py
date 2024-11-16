@@ -3,22 +3,7 @@ import pandas as pd
 import pickle
 from recommendation import recommend_attractions
 from custom_preprocessors import PreprocessText
-import os
-import subprocess
 
-# Path to the setup script
-setup_script = "./setup.sh"
-
-# Run setup.sh if it exists
-if os.path.exists(setup_script):
-    print("Running setup.sh...")
-    try:
-        subprocess.run(["bash", setup_script], check=True)
-        print("setup.sh executed successfully.")
-    except subprocess.CalledProcessError as e:
-        print(f"Error while running setup.sh: {e}")
-else:
-    print("setup.sh not found, skipping setup.")
 def load_resources():
     """Load the pipeline and dataset."""
     try:
