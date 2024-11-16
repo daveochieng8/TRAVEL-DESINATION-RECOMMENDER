@@ -4,3 +4,5 @@ thinc==8.1.13
 scikit-learn==1.5.2
 nltk==3.9.1
 joblib==1.4.2
+pandas==2.2.3
+streamlit==1.40.1
