@@ -1,7 +1,6 @@
-streamlit==1.40.1
-pandas==2.2.0
-numpy==1.26.4
-scikit-learn==1.3.2
-spacy==3.5.2
+streamlit
+pandas
+numpy
+scikit-learn
+spacy
 en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0-py3-none-any.whl
-asttokens==2.4.1
