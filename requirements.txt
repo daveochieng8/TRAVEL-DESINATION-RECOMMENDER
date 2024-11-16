@@ -1,4 +1,4 @@
 joblib
 scikit-learn
 nltk
-spacyspacy==3.5.3
+spacy==3.5.3
