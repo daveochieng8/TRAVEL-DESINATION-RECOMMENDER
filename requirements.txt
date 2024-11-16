@@ -2,3 +2,4 @@ joblib
 scikit-learn
 nltk
 spacy==3.5.3
+thinc==8.1.10
