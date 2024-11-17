@@ -8,11 +8,13 @@ from sklearn.base import BaseEstimator, TransformerMixin
 import spacy
 import os
 import sys
+from spacy.cli import download
 
 try:
     nlp = spacy.load('en_core_web_sm')
 except OSError:
-    os.system('python -m spacy download en_core_web_sm')
+    
+    download('en_core_web_sm')
     nlp = spacy.load('en_core_web_sm')
 
 class PreprocessText(BaseEstimator, TransformerMixin):

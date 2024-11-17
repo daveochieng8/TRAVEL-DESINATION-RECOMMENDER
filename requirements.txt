@@ -7,4 +7,3 @@ scikit-learn==1.5.2
 nltk==3.9.1
 joblib==1.4.2
 streamlit==1.40.1
-spacy[en_core_web_sm]==3.6.1
