@@ -7,3 +7,4 @@ scikit-learn==1.5.2
 nltk==3.9.1
 joblib==1.4.2
 streamlit==1.40.1
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.6.0/en_core_web_sm-3.6.0.tar.gz
