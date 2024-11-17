@@ -6,9 +6,14 @@ import pandas as pd
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 import spacy
+import os
+import sys
 
-# Load spaCy language model
-nlp = spacy.load('en_core_web_sm')
+try:
+    nlp = spacy.load('en_core_web_sm')
+except OSError:
+    os.system('python -m spacy download en_core_web_sm')
+    nlp = spacy.load('en_core_web_sm')
 
 class PreprocessText(BaseEstimator, TransformerMixin):
     """
